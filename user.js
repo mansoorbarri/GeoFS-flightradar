@@ -184,47 +184,174 @@
   }
 
   // --- UI 注入 ---
-  function injectFlightUI() {
+function injectFlightUI() {
+    // Check if the UI is already injected
+    if (document.getElementById('flightInfoUI')) {
+        return;
+    }
+
+    // 1. Create the main UI container
     flightUI = document.createElement('div');
     flightUI.id = 'flightInfoUI';
-    flightUI.style.position = 'fixed';
-    flightUI.style.bottom = '280px';
-    flightUI.style.right = '6px';
-    flightUI.style.background = 'rgba(0,0,0,0.6)';
-    flightUI.style.padding = '8px';
-    flightUI.style.borderRadius = '6px';
-    flightUI.style.color = 'white';
-    flightUI.style.fontSize = '12px';
-    flightUI.style.zIndex = 999999;
 
+    // 2. Modern CSS Styles (Left-Middle Position)
+    flightUI.style.position = 'fixed';
+    flightUI.style.top = '50%';
+    flightUI.style.left = '20px'; // Positioned 20px from the left edge
+    flightUI.style.transform = 'translateY(-50%)'; // Vertically center it
+    
+    // Aesthetic Styles
+    flightUI.style.background = 'rgba(25, 30, 45, 0.9)';
+    flightUI.style.backdropFilter = 'blur(10px)';
+    flightUI.style.padding = '18px';
+    flightUI.style.borderRadius = '12px';
+    flightUI.style.color = '#EAEAEA';
+    flightUI.style.fontFamily = 'Helvetica Neue, Arial, sans-serif';
+    flightUI.style.fontSize = '13px';
+    flightUI.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
+    flightUI.style.zIndex = 999999;
+    flightUI.style.maxWidth = '220px';
+
+    // 3. Structured and Styled Inner HTML
     flightUI.innerHTML = `
-      <div>Dep: <input id="depInput" style="width:60px"></div>
-      <div>Arr: <input id="arrInput" style="width:60px"></div>
-      <div>Flt#: <input id="fltInput" style="width:60px"></div>
-      <div>SQK: <input id="sqkInput" style="width:60px" maxlength="4"></div>
-      <button id="saveBtn">Save</button>
+      <style>
+        /* Embedded styles */
+        #flightInfoUI .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(100, 110, 130, 0.2);
+        }
+
+        #flightInfoUI .title {
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        #flightInfoUI #closeBtn {
+            background: none;
+            border: none;
+            color: #FF5C5C; 
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+
+        #flightInfoUI #closeBtn:hover {
+            color: #FF2B2B;
+        }
+        
+        #flightInfoUI .input-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        #flightInfoUI input {
+            background: rgba(40, 50, 70, 0.9);
+            border: 1px solid rgba(100, 110, 130, 0.5);
+            color: #EAEAEA;
+            padding: 4px 8px;
+            border-radius: 6px;
+            width: 70px;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+        }
+
+        #flightInfoUI input:focus {
+            border-color: #007AFF;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.3);
+        }
+        
+        #flightInfoUI button#saveBtn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            background-color: #007AFF;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        #flightInfoUI button#saveBtn:hover {
+            background-color: #005BB5;
+        }
+        
+        #flightInfoUI button#saveBtn:active {
+            transform: scale(0.98);
+        }
+      </style>
+
+      <div class="header">
+        <span class="title">✈️ Flight Data Entry</span>
+        <button id="closeBtn">W</button>
+      </div>
+
+      <div class="input-group">
+        <label for="depInput">Departure:</label> 
+        <input id="depInput" maxlength="4">
+      </div>
+      <div class="input-group">
+        <label for="arrInput">Arrival:</label> 
+        <input id="arrInput" maxlength="4">
+      </div>
+      <div class="input-group">
+        <label for="fltInput">Flight #:</label> 
+        <input id="fltInput" maxlength="5">
+      </div>
+      <div class="input-group">
+        <label for="sqkInput">Squawk:</label> 
+        <input id="sqkInput" maxlength="4">
+      </div>
+      <button id="saveBtn">Save Info</button>
     `;
 
     document.body.appendChild(flightUI);
 
-    // 讓輸入框自動轉大寫
-    ['depInput','arrInput','fltInput','sqkInput'].forEach(id => {
+    // 4. Input Listeners: Auto-Capitalization (Original functionality restored)
+    const inputIds = ['depInput', 'arrInput', 'fltInput', 'sqkInput'];
+    inputIds.forEach(id => {
       const el = document.getElementById(id);
       el.addEventListener('input', () => {
-        el.value = el.value.toUpperCase();
+        el.value = el.value.toUpperCase(); // Ensure ALL inputs auto-capitalize
       });
     });
+    
+    // 5. Close Button Listener ('W' button functionality)
+    document.getElementById('closeBtn').onclick = () => {
+        if (flightUI) {
+            flightUI.style.display = 'none'; // Hide the UI
+        }
+    };
 
+    // 6. Save Button Logic (Original saving logic restored)
     document.getElementById('saveBtn').onclick = () => {
       flightInfo.departure = document.getElementById('depInput').value.trim();
       flightInfo.arrival = document.getElementById('arrInput').value.trim();
       flightInfo.flightNo = document.getElementById('fltInput').value.trim();
       flightInfo.squawk = document.getElementById('sqkInput').value.trim();
+      
+      // Call the global toast function
       showToast('Flight info saved!');
     };
-  }
-  injectFlightUI();
+}
 
+// Inject the UI on script load
+injectFlightUI();
+
+// Call the function to inject the UI
+injectFlightUI();
   // --- 快捷鍵 W 收合 UI ---
   document.addEventListener('keydown', (e) => {
     if (e.key.toLowerCase() === 'w') {
